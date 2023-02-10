@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
 import { Flight } from './interfaces/flight-interface';
 import { Cache } from 'cache-manager';
@@ -11,13 +11,11 @@ import { SourceBase } from './sources-factory/source-base';
 @Injectable()
 export class FlightService {
   private dataSources: SourceBase[];
+  // private flights$ = new BehaviorSubject([]);
 
-  private flights$ = new BehaviorSubject([]);
+  protected readonly logger = new Logger();
 
-  constructor(
-    // @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    protected readonly httpService: HttpService,
-  ) {
+  constructor(protected readonly httpService: HttpService) {
     this.dataSources = this.initDataSources(configs);
   }
 
@@ -31,7 +29,8 @@ export class FlightService {
   }
 
   getFlights(): Observable<Flight[]> {
-    console.log('----- Cache Updated -----');
+    this.logger.log('--- Flights Cache Updated ---');
+
     const flightsObservables = this.getFlightsObservables(this.dataSources);
     return combineLatest(flightsObservables).pipe(
       map((aggregatedResults: Flight[][]) => aggregatedResults.flat(1)),
