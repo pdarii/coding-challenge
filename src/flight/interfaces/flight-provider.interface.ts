@@ -1,7 +1,7 @@
-// import { AxiosResponse } from 'axios';
-// import { Observable } from 'rxjs';
-// import { Flight } from './flight-interface';
+import { Observable } from 'rxjs';
+import { Flight } from './flight-interface';
 
-// export interface FlightProvider {
-//   getFlights: Observable<AxiosResponse<Flight[]>>;
-// }
+// TODO delete
+export interface FlightProvider {
+  getFlights: Observable<Flight[]>;
+}
