@@ -5,12 +5,12 @@ import { Observable } from 'rxjs';
 import { Flight } from '../interfaces/flight-interface';
 
 @Injectable()
-export class FlightBaseService {
+export abstract class FlightBaseService {
   protected url: string;
 
   constructor(protected readonly httpService: HttpService) {}
 
-  getFlights(): Observable<AxiosResponse<Flight[]>> {
+  protected getFlights(): Observable<AxiosResponse<Flight[]>> {
     return this.httpService.get(this.url);
   }
 }

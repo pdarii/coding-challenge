@@ -1,16 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of } from 'rxjs';
 import { Flight } from './interfaces/flight-interface';
-import { Source1Service } from './providers/source1.service';
+import { Cache } from 'cache-manager';
 
+import * as configs from './configs';
+import { SourceConfig } from './interfaces/source-config.interface';
+import { HttpService } from '@nestjs/axios';
+import { toArray } from 'rxjs/operators';
+import { FlightAggregated } from './interfaces/flight-aggregated.interface';
 @Injectable()
 export class FlightService {
-  protected url: string;
+  private dataSources: SourceConfig[];
 
-  constructor(private source1Service: Source1Service) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    protected readonly httpService: HttpService,
+  ) {
+    this.dataSources = this.initDataSources(configs);
+    // get configs create fabric objects
+  }
 
-  getFlights(): Observable<AxiosResponse<Flight[]>> {
-    return this.source1Service.getFlights();
+  private initDataSources(configs: {
+    [key: string]: SourceConfig;
+  }): SourceConfig[] {
+    return Object.values(configs);
+  }
+
+  getFlights(): Observable<Flight[]> {
+    const flightsObservables = this.getFlightsObservables(this.dataSources);
+
+    return combineLatest(flightsObservables).pipe(
+      map((aggregatedResults: AxiosResponse[]) =>
+        aggregatedResults.map((sourceResult) => sourceResult.data),
+      ),
+      map((results: FlightAggregated[]) => this.removeDuplicated(results)),
+    );
+  }
+
+  private removeDuplicated(results: FlightAggregated[]) {
+    console.log('----------');
+    console.dir(results);
+    console.log('----------');
+    return of([]) as any;
+  }
+
+  private getFlightsObservables(
+    dataSources: SourceConfig[],
+  ): Observable<AxiosResponse<Flight[]>>[] {
+    return dataSources.map((dataSource) => {
+      return this.httpService.get(dataSource.url).pipe(
+        catchError((err) => {
+          console.log(err);
+          throw err;
+        }),
+      );
+    });
   }
 }
