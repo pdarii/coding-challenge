@@ -11,9 +11,6 @@ export class SourceFactory {
         return new Source1(url, httpService);
       case SourcesTypeEnum.source2:
         return new Source2(url, httpService);
-      //   default:
-      //     return new Error('Source type not supported');
-      // TODO error handling
     }
   }
 }

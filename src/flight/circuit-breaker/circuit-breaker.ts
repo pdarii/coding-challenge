@@ -14,6 +14,7 @@ export class CircuitBreaker {
   private nextAttempt: number = Date.now();
   private failureTimeout: number = FAILURE_TIMEOUT;
   private successTimeout: number = SUCCESS_TIMEOUT;
+  private failedAttempts = 0;
   private readonly logger = new Logger();
 
   constructor(private readonly httpService: HttpService, url: string) {
@@ -39,6 +40,7 @@ export class CircuitBreaker {
   private success(res: AxiosResponse<Flight[]>): AxiosResponse<Flight[]> {
     if (this.state === BreakerState.YELLOW) {
       this.state = BreakerState.GREEN;
+      this.failedAttempts = 0;
       this.nextAttempt = Date.now() + this.successTimeout;
     }
 
@@ -53,7 +55,9 @@ export class CircuitBreaker {
 
   private failure(): Error {
     this.state = BreakerState.RED;
-    this.nextAttempt = Date.now() + this.failureTimeout;
+    this.failedAttempts++;
+    this.nextAttempt =
+      Date.now() + this.failureTimeout * Math.pow(this.failedAttempts, 2);
 
     this.logger.warn(
       `Failed call to ${this.url}, next call on ${new Date(

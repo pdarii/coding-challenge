@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 
-import { combineLatest, firstValueFrom, map, Observable, tap } from 'rxjs';
+import { combineLatest, firstValueFrom, map, Observable } from 'rxjs';
 import { Flight } from './interfaces/flight-interface';
 import { SourceConfig } from './interfaces/source-config.interface';
 import { SourceFactory } from './sources-factory/source-factory';
@@ -71,7 +71,7 @@ export class FlightService {
     dataSources: FlightProvider[],
   ): Observable<Flight[]>[] {
     return dataSources.map((dataSource: FlightProvider) => {
-      return dataSource.flights$;
+      return dataSource.getFlights();
     });
   }
 }
