@@ -29,7 +29,7 @@ export class FlightService {
     [key: string]: SourceConfig;
   }): FlightProvider[] {
     return Object.values(configs).map((config: SourceConfig) => {
-      return this.sourceFactory.create(config.type, config.url);
+      return this.sourceFactory.createSource(config.type, config.url);
     });
   }
 

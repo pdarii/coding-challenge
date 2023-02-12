@@ -14,7 +14,7 @@ export class SourceFactory {
     private httpService: HttpService,
   ) {}
 
-  create(type: SourcesTypeEnum, url: string): FlightProvider {
+  createSource(type: SourcesTypeEnum, url: string): FlightProvider {
     const flightsResilienceService = new FlightsResilienceService(
       this.schedulerRegistry,
       this.httpService,

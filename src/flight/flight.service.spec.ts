@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { first, firstValueFrom, Observable, of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { FlightService } from './flight.service';
 import { Flight } from './interfaces/flight-interface';
 import { SOURCE_CONFIG_MOCK } from './mocks/config.mock';
@@ -13,7 +13,7 @@ import { SourceFactory } from './sources-factory/source-factory';
 
 class FakeHttpService {}
 class FakeSourceFactory {
-  create = () => MOCK_DATASOURCE;
+  createSource = () => MOCK_DATASOURCE;
 }
 class FakeSchedulerRegistry {
   addTimeout = () => {};
@@ -69,7 +69,7 @@ describe('FlightService', () => {
 
   it('should get DataSources', () => {
     const spy = jest
-      .spyOn(service['sourceFactory'], 'create')
+      .spyOn(service['sourceFactory'], 'createSource')
       .mockReturnValue(MOCK_FLIGHT_PROVIDER);
 
     const dataSources = service['getDataSources']({

@@ -6,8 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { SourcesTypeEnum } from '../enums/sources-enum';
 
 // In real life constants should be moved somewhere / .env / db / etc
-const FAILURE_TIMEOUT = 5000; // milliseconds
-const SUCCESS_TIMEOUT = 10000; // milliseconds
+const FAILURE_TIMEOUT = 5000; // milliseconds ( 5 second )
+const SUCCESS_TIMEOUT = 3600000; // milliseconds ( 1 hour )
 
 export class FlightsResilienceService {
   private failureTimeout: number = FAILURE_TIMEOUT;
@@ -65,13 +65,17 @@ export class FlightsResilienceService {
     this.startPolling(this.successTimeout);
   }
 
-  private failure() {
-    this.failedAttempts++;
-
-    const newInterval = Math.min(
+  private getNewFailedInterval(): number {
+    return Math.min(
       this.failureTimeout * Math.pow(this.failedAttempts, 2),
       this.successTimeout,
     );
+  }
+
+  private failure() {
+    this.failedAttempts++;
+
+    const newInterval = this.getNewFailedInterval();
 
     this.startPolling(newInterval);
 

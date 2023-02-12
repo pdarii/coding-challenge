@@ -20,6 +20,10 @@ describe('FlightController', () => {
     flightController = app.get<FlightController>(FlightController);
   });
 
+  it('should be defined', () => {
+    expect(flightController).toBeDefined();
+  });
+
   describe('root', () => {
     it('should call service and return Observable', async () => {
       const spy = jest
