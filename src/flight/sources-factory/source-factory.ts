@@ -5,6 +5,7 @@ import { FlightsResilienceService } from '../flights-resilience/flights-resilien
 import { SourcesTypeEnum } from '../enums/sources-enum';
 import { Source1 } from './source1';
 import { Source2 } from './source2';
+import { FlightProvider } from '../interfaces/flight-provider.interface';
 
 @Injectable()
 export class SourceFactory {
@@ -13,7 +14,7 @@ export class SourceFactory {
     private httpService: HttpService,
   ) {}
 
-  create(type: SourcesTypeEnum, url: string) {
+  create(type: SourcesTypeEnum, url: string): FlightProvider {
     const flightsResilienceService = new FlightsResilienceService(
       this.schedulerRegistry,
       this.httpService,
