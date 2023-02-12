@@ -1,16 +1,30 @@
 import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { FlightsResilienceService } from '../flights-resilience/flights-resilience.service';
 import { SourcesTypeEnum } from '../enums/sources-enum';
 import { Source1 } from './source1';
 import { Source2 } from './source2';
 
+@Injectable()
 export class SourceFactory {
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private httpService: HttpService,
+  ) {}
+
   create(type: SourcesTypeEnum, url: string) {
-    const httpService = new HttpService();
+    const flightsResilienceService = new FlightsResilienceService(
+      this.schedulerRegistry,
+      this.httpService,
+      url,
+      type,
+    );
     switch (type) {
       case SourcesTypeEnum.source1:
-        return new Source1(url, httpService);
+        return new Source1(url, type, flightsResilienceService);
       case SourcesTypeEnum.source2:
-        return new Source2(url, httpService);
+        return new Source2(url, type, flightsResilienceService);
     }
   }
 }

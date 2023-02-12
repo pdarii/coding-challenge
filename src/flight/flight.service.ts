@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 
-import { combineLatest, firstValueFrom, map, Observable } from 'rxjs';
+import { combineLatest, firstValueFrom, map, Observable, tap } from 'rxjs';
 import { Flight } from './interfaces/flight-interface';
 import { SourceConfig } from './interfaces/source-config.interface';
 import { SourceFactory } from './sources-factory/source-factory';
@@ -9,6 +9,7 @@ import { FlightProvider } from './interfaces/flight-provider.interface';
 
 import * as configs from './configs';
 import { FlightSlice } from './interfaces/flight-slice-interface';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class FlightService {
@@ -17,7 +18,10 @@ export class FlightService {
 
   protected readonly logger = new Logger();
 
-  constructor(protected readonly httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {
     this.dataSources = this.getDataSources(configs);
     this.flights$ = this.getFlightsAggregatedObservable(this.dataSources);
   }
@@ -29,7 +33,7 @@ export class FlightService {
   private getDataSources(configs: {
     [key: string]: SourceConfig;
   }): FlightProvider[] {
-    const factory = new SourceFactory();
+    const factory = new SourceFactory(this.schedulerRegistry, this.httpService);
     return Object.values(configs).map((config: SourceConfig) => {
       return factory.create(config.type, config.url);
     });
