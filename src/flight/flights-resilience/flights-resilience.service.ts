@@ -6,8 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { SourcesTypeEnum } from '../enums/sources-enum';
 
 // In real life constants should be moved somewhere / .env / db / etc
-const FAILURE_TIMEOUT = 5000; // milliseconds ( 5 second )
-const SUCCESS_TIMEOUT = 3600000; // milliseconds ( 1 hour )
+import { FAILURE_TIMEOUT } from '../constants/failure-timeout.constant';
+import { SUCCESS_TIMEOUT } from '../constants/success-timeout.constant';
 
 export class FlightsResilienceService {
   private failureTimeout: number = FAILURE_TIMEOUT;
@@ -74,11 +74,8 @@ export class FlightsResilienceService {
 
   private failure() {
     this.failedAttempts++;
-
     const newInterval = this.getNewFailedInterval();
-
     this.startPolling(newInterval);
-
     this.logger.warn(
       `Failed call to ${this.url}, next call after ${newInterval} milliseconds `,
     );
