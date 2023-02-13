@@ -1,7 +1,5 @@
-import { HttpService } from '@nestjs/axios';
-import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BehaviorSubject, first, firstValueFrom, Observable, of } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, of } from 'rxjs';
 import { FlightsResilienceService } from './flights-resilience.service';
 import { AxiosResponse } from 'axios';
 import { MOCK_FLIGHT } from '../mocks/flight.mock';

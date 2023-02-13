@@ -5,9 +5,9 @@ import { Flight } from './interfaces/flight-interface';
 import { SourceConfig } from './interfaces/source-config.interface';
 import { SourceFactory } from './sources-factory/source-factory';
 import { FlightProvider } from './interfaces/flight-provider.interface';
+import { FlightSlice } from './interfaces/flight-slice-interface';
 
 import * as configs from './configs';
-import { FlightSlice } from './interfaces/flight-slice-interface';
 
 @Injectable()
 export class FlightService {
