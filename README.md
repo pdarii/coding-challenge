@@ -36,4 +36,6 @@ $ npm run test:cov
 #
 ## Service testing
 
+For testing execute `GET` call to `http://localhost:3000/`
+
 For service testing purposes you can tweak `SUCCESS_TIMEOUT` constant here: `src/flight/constants/success-timeout.constant.ts` and set it to `5000` milliseconds to see how app works with faster polling.
